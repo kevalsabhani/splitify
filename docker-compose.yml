@@ -1,0 +1,47 @@
+services:
+  api:
+    build: .
+    container_name: splitify-api-container
+    ports:
+      - "8080:8080"
+    environment:
+      APP_NAME: splitify
+      APP_ENV: development
+      DB_DSN: postgres://postgres:postgres@db:5432/splitify?sslmode=disable
+      LOG_LEVEL: info
+      API_PORT: 8000
+    networks:
+      - app-network
+    depends_on:
+      db:
+        condition: service_healthy
+    restart: unless-stopped
+
+  db:
+    image: postgres:16-alpine
+    container_name: splitify-db-container
+    environment:
+      POSTGRES_USER: myuser
+      POSTGRES_PASSWORD: mysecretpassword
+      POSTGRES_DB: splitifydb
+    volumes:
+      - postgres_data:/var/lib/postgresql/data
+      - ./scripts/init.sql:/docker-entrypoint-initdb.d/init.sql
+    networks:
+      - app-network
+    healthcheck:
+      test: ["CMD-SHELL", "pg_isready -U myuser -d splitifydb"]
+      interval: 10s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
+
+volumes:
+  postgres_data:
+    driver: local

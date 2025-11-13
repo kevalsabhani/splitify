@@ -1,6 +1,7 @@
 package bootstrap
 
 import (
+	"fmt"
 	"net/http"
 )
 
@@ -9,13 +10,7 @@ type server struct {
 	port   string
 }
 
-// func NewServer(router http.Handler, port string) *server {
-// 	return &server{
-// 		router: router,
-// 		port:   fmt.Sprintf(":%s", port),
-// 	}
-// }
-
 func (s *server) Run() error {
+	fmt.Println("server running on port...")
 	return http.ListenAndServe(s.port, s.router)
 }

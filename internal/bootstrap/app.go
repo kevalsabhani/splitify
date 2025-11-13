@@ -1,9 +1,10 @@
 package bootstrap
 
 import (
-	"net/http"
+	"fmt"
 
 	"github.com/kevalsabhani/splitify/internal/config"
+	"github.com/kevalsabhani/splitify/internal/http"
 )
 
 type app struct {
@@ -24,10 +25,9 @@ func NewApp() (*app, error) {
 	// TODO: Remove below line once db is used
 	_ = db
 
-	// TODO: Change router once you have routes implemented
 	server := &server{
-		router: http.DefaultServeMux,
-		port:   conf.App.Env,
+		router: http.NewRouter(),
+		port:   fmt.Sprintf(":%s", conf.App.Port),
 	}
 
 	return &app{
